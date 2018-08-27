@@ -27,7 +27,7 @@ class connect:
 
         prof = profile.Profile()
         prof.set_region(profile.Profile.ALL, os.environ['OS_REGION_NAME'])
-        prof.set_interface('identity', 'admin')
+        prof.set_interface('identity', 'public')
         prof.set_version('identity', 'v3')
         prof.set_version('image', 'v2')
         """
