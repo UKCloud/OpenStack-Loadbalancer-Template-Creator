@@ -2,6 +2,7 @@ from base import base
 from tabulate import tabulate
 from os import system, name
 from git import Repo
+from shutil import copyfile
 import json
 def run():
   conn = base.connect().create_connection() 
@@ -110,8 +111,12 @@ def generateEnvFile(externalNetworks,stacks,keys,images,routers,flavors, ports):
   writeEnvfile(stackName,serverNames,networkName,netowrkCIDR,DNS,haProxyConfig,selectedExternalNetwork,selectedRooter,selectedImage,selectedFlavor,selectedKeyPair,haProxyPorts)
 
 def cloneHaProxyRepo(stackName):
-  Repo.clone_from("git@github.com:UKCloud/haproxy-on-openstack.git", stackName)
-  
+  data = Repo.clone_from("git@github.com:UKCloud/haproxy-on-openstack.git", stackName)
+  data.git.checkout('hotfix/updating_to_work_with_newton')
+
+def copyHaProxyConfig(stackName,haProxyConfigLocation):
+  copyfile(haProxyConfigLocation, stackName + "/files/haproxy.cfg")
+
 def writeEnvfile(stackName,serverNames,networkName,netowrkCIDR,DNS,haProxyConfig,selectedExternalNetwork,selectedRooter,selectedImage,selectedFlavor,selectedKeyPair,haProxyPorts):
   f = open(stackName + "/" + stackName + "_enviroment.yaml", "a")
   f.write("parameters:"  + "\n")
@@ -122,11 +127,12 @@ def writeEnvfile(stackName,serverNames,networkName,netowrkCIDR,DNS,haProxyConfig
   f.write("  external_network: " + selectedExternalNetwork + "\n")
   f.write("  vrrp_subnet_cidr: " + netowrkCIDR + "\n")
   f.write("  vrrp_subnet_dns: " + DNS + "\n")
-  f.write("  haproxy_ports: " + haProxyPorts + "\n")
+  f.write("  haproxy_ports: " + "'" + haProxyPorts + "'" + "\n")
   f.write("  server_name: " + serverNames + "\n")
   f.write("  frontend_network_name: " + networkName + "\n")
-  #copyHaProxyConfig(stackName)
-  print("Now run: openstack stack create -t haproxy.yaml -e " + stackName + "/" + stackName + "_enviroment.yaml" + "--wait " + stackName)
+  if haProxyConfig:
+    copyHaProxyConfig(stackName,haProxyConfig)
+  print("Now run: openstack stack create -t " + stackName + "/haproxy.yaml -e " + stackName + "/" + stackName + "_enviroment.yaml" + " --wait " + stackName)
    
 
 if __name__ == "__main__":
