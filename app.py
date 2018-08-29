@@ -111,7 +111,7 @@ def generateEnvFile(externalNetworks,stacks,keys,images,routers,flavors, ports):
   writeEnvfile(stackName,serverNames,networkName,netowrkCIDR,DNS,haProxyConfig,selectedExternalNetwork,selectedRooter,selectedImage,selectedFlavor,selectedKeyPair,haProxyPorts)
 
 def cloneHaProxyRepo(stackName):
-  data = Repo.clone_from("https://github.com/UKCloud/OpenStack-Loadbalancer-Template-Creator.git", stackName)
+  data = Repo.clone_from("https://github.com/UKCloud/haproxy-on-openstack.git", stackName)
   data.git.checkout('hotfix/updating_to_work_with_newton')
 
 def copyHaProxyConfig(stackName,haProxyConfigLocation):
