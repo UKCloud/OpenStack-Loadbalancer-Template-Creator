@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 from base import base
 from tabulate import tabulate
 from git import Repo
